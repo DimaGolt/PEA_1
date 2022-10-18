@@ -8,9 +8,11 @@ class Path {
 
 public:
     Path(int shortestPath, vector<int> path);
+    Path();
     ~Path();
+    void copyData(Path pathFrom);
 
-    int shortestPath;
+    int shortestPath{};
     vector<int> path;
 };
 

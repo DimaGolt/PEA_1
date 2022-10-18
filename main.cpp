@@ -42,33 +42,39 @@ Path travellingSalesmanProblem(int **graph, int vertexNumber) {
 }
 
 int main() {
-    Settings settings =  Settings("settings.ini");
+    Settings settings = Settings("settings.ini");
     Parser parser;
     Stopwatch stopwatch;
     ofstream outputFile;
     outputFile.open(settings.outputFile);
-    outputFile << "nazwa pliku wej ; ilość powtórzeń ; wartość optymalna ; wartość otrzymana ; ścieżka otrzymana; średni czas (ms) \n";
+    outputFile
+            << "nazwa pliku wej ; ilość powtórzeń ; wartość optymalna ; wartość otrzymana ; ścieżka otrzymana; średni czas (ms) \n";
 
-    for(TestCase testCase : settings.cases){
+    for (TestCase testCase: settings.cases) {
         Matrix *matrix = parser.LoadFile(testCase.filename);
         long long allTime = 0;
-        Path *path;
-        for(int i = 0; i < testCase.repeats; i++){
+        Path path;
+        bool firstTime = true;
+        for (int i = 0; i < testCase.repeats; i++) {
             stopwatch.start();
             Path salesman = travellingSalesmanProblem(matrix->vertices, matrix->numberOfVertices);
             stopwatch.stop();
             allTime += stopwatch.getTime();
-            path = &salesman;
+            if (firstTime) {
+                path.copyData(salesman);
+                firstTime = false;
+            }
         }
         outputFile << testCase.filename << " ;";
         outputFile << testCase.repeats << " ;";
         outputFile << testCase.optimalPath << " ;";
-        outputFile << path->shortestPath << " ;";
-        for (int i : path->path) {
+        outputFile << path.shortestPath << " ;";
+        for (int i: path.path) {
             outputFile << i << " ";
         }
         outputFile << "0 ;";
-        outputFile << allTime/testCase.repeats << " \n";
+        outputFile << allTime / testCase.repeats << " \n";
     }
+    outputFile.close();
     return 0;
 }
